@@ -1,10 +1,6 @@
 // db.js
 import Dexie, { Table } from 'dexie';
-import { LoanValues } from '../utils/interfaces';
-
-interface LoansTable extends LoanValues {
-  id?: number;
-}
+import { LoansTable, LoanValues } from '../utils/interfaces';
 
 export class LoanDexie extends Dexie {
   loans!: Table<LoansTable>;

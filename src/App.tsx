@@ -1,12 +1,24 @@
-import React from 'react';
 import Container from 'react-bootstrap/Container';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './bootstrap.min.css';
-import Header from './components/layout/Header';
+import DashBoard from './components/layout/DashBoard';
+import { Loan } from './components/Loan';
+
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <DashBoard />,
+  },
+  {
+    path: '/loan/:id',
+    element: <Loan />,
+  },
+]);
 
 function App() {
   return (
     <Container fluid>
-      <Header />
+      <RouterProvider router={router} />
     </Container>
   );
 }

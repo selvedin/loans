@@ -16,3 +16,7 @@ export interface LoanValues {
   period: number;
   startDate: string;
 }
+
+export interface LoansTable extends LoanValues {
+  id?: number;
+}
