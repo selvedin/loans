@@ -3,21 +3,23 @@ import Middle from './layout/Middle';
 import { Formik } from 'formik';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
+import { TotalAmountField } from './custom/TotalAmountField';
 import { ErrorMessage } from './common/ErrorMessage';
-import { LoanSchema } from '../utils/schemas';
-import { loanValues } from '../utils/initialValues';
-import { addLoan } from '../store/db';
+import { LoanFormSchema } from '../utils/schemas';
+import { loanInitialValues } from '../utils/initialValues';
+import { AnuitetField } from './custom/AnuitetField';
 
-const LoanForm: React.FC<{}> = (): ReactElement => {
+const LoanFormOld: React.FC<{}> = (): ReactElement => {
   return (
     <Middle align="start">
       <Formik
-        initialValues={loanValues}
-        validationSchema={LoanSchema}
-        onSubmit={(values, { setSubmitting, resetForm }) => {
-          addLoan(values);
-          resetForm();
-          setSubmitting(false);
+        initialValues={loanInitialValues}
+        validationSchema={LoanFormSchema}
+        onSubmit={(values, { setSubmitting }) => {
+          setTimeout(() => {
+            alert(JSON.stringify(values, null, 2));
+            setSubmitting(false);
+          }, 400);
         }}
       >
         {({
@@ -30,33 +32,33 @@ const LoanForm: React.FC<{}> = (): ReactElement => {
           isSubmitting,
         }) => (
           <Form onSubmit={handleSubmit}>
-            <Form.Group className="mb-3" controlId="formTitle">
-              <Form.Label>Title</Form.Label>
+            <Form.Group className="mb-3" controlId="formLoanAmount">
+              <Form.Label>Loan amount</Form.Label>
               <Form.Control
-                name="title"
-                type="text"
-                placeholder="Title"
-                value={values.title}
-                onChange={handleChange}
-                onBlur={handleBlur}
-              />
-              <ErrorMessage error={errors.title} touch={touched.title} />
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="formTotalAmount">
-              <Form.Label>Total Amount</Form.Label>
-              <Form.Control
+                name="loanAmount"
                 type="number"
-                name="totalAmount"
                 placeholder="0.0"
-                value={values.totalAmount}
+                value={values.loanAmount}
                 onChange={handleChange}
                 onBlur={handleBlur}
               />
               <ErrorMessage
-                error={errors.totalAmount}
-                touch={touched.totalAmount}
+                error={errors.loanAmount}
+                touch={touched.loanAmount}
               />
+            </Form.Group>
+
+            <Form.Group className="mb-3" controlId="formInterest">
+              <Form.Label>Interest rate (%)</Form.Label>
+              <Form.Control
+                type="number"
+                name="interest"
+                placeholder="0.0"
+                value={values.interest}
+                onChange={handleChange}
+                onBlur={handleBlur}
+              />
+              <ErrorMessage error={errors.interest} touch={touched.interest} />
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="formEks">
@@ -72,21 +74,8 @@ const LoanForm: React.FC<{}> = (): ReactElement => {
               <ErrorMessage error={errors.eks} touch={touched.eks} />
             </Form.Group>
 
-            <Form.Group className="mb-3" controlId="formRate">
-              <Form.Label>Rate</Form.Label>
-              <Form.Control
-                type="number"
-                name="rate"
-                placeholder="0.0"
-                value={values.rate}
-                onChange={handleChange}
-                onBlur={handleBlur}
-              />
-              <ErrorMessage error={errors.rate} touch={touched.rate} />
-            </Form.Group>
-
             <Form.Group className="mb-3" controlId="formPeriod">
-              <Form.Label>Period</Form.Label>
+              <Form.Label>Period (months)</Form.Label>
               <Form.Control
                 type="number"
                 name="period"
@@ -98,20 +87,24 @@ const LoanForm: React.FC<{}> = (): ReactElement => {
               <ErrorMessage error={errors.period} touch={touched.period} />
             </Form.Group>
 
-            <Form.Group className="mb-3" controlId="formStartDate">
-              <Form.Label>Start Date</Form.Label>
+            <Form.Group className="mb-3" controlId="formPeriod">
+              <Form.Label>Other costs</Form.Label>
               <Form.Control
-                type="date"
-                name="startDate"
-                value={values.startDate}
+                type="number"
+                name="otherCosts"
+                placeholder="0.0"
+                value={values.otherCosts}
                 onChange={handleChange}
                 onBlur={handleBlur}
               />
               <ErrorMessage
-                error={errors.startDate}
-                touch={touched.startDate}
+                error={errors.otherCosts}
+                touch={touched.otherCosts}
               />
             </Form.Group>
+
+            <TotalAmountField name="totalAmount" />
+            <AnuitetField name="anuitet" />
 
             <Button
               variant="primary"
@@ -128,4 +121,4 @@ const LoanForm: React.FC<{}> = (): ReactElement => {
   );
 };
 
-export default LoanForm;
+export default LoanFormOld;
