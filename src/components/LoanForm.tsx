@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { Dispatch, ReactElement, SetStateAction } from 'react';
 import Middle from './layout/Middle';
 import { Formik } from 'formik';
 import Form from 'react-bootstrap/Form';
@@ -7,17 +7,21 @@ import { ErrorMessage } from './common/ErrorMessage';
 import { LoanSchema } from '../utils/schemas';
 import { loanValues } from '../utils/initialValues';
 import { addLoan } from '../store/db';
+import { useNavigate } from 'react-router-dom';
 
-const LoanForm: React.FC<{}> = (): ReactElement => {
+const LoanForm: React.FC = (): ReactElement => {
+  const navigate = useNavigate();
   return (
     <Middle align="start">
       <Formik
         initialValues={loanValues}
         validationSchema={LoanSchema}
         onSubmit={(values, { setSubmitting, resetForm }) => {
-          addLoan(values);
-          resetForm();
-          setSubmitting(false);
+          addLoan(values).then((result) => {
+            resetForm();
+            setSubmitting(false);
+            navigate('/loan/' + result);
+          });
         }}
       >
         {({

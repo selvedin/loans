@@ -23,7 +23,7 @@ export async function addLoan(values: LoanValues) {
   const { title, totalAmount, eks, period, rate, startDate } = values;
   try {
     // Add the new loan!
-    await db.loans.add({
+    const id = await db.loans.add({
       title,
       totalAmount,
       eks,
@@ -31,6 +31,7 @@ export async function addLoan(values: LoanValues) {
       rate,
       startDate,
     });
+    return id;
   } catch (error) {
     alert(error);
   }

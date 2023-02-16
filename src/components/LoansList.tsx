@@ -17,7 +17,7 @@ const LoansList = () => {
           <Row key={loan.id} className="p-1">
             <Col className="mx-4">
               <Link to={'/loan/' + loan.id}>
-                <Button variant="info" className="w-100 btn-sm">
+                <Button variant="secondary" className="w-100 btn-sm">
                   {loan.title}
                 </Button>
               </Link>
