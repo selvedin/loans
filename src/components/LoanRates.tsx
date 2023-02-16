@@ -1,6 +1,9 @@
 import moment, { Moment } from 'moment';
 import { useCallback, useEffect, useState } from 'react';
 import { Button, Col, ListGroup, Row } from 'react-bootstrap';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
 import { addRate, getRatesByLoan } from '../store/db';
 import { formatCurrency } from '../utils/helperFunctions';
 import { LoanRate, LoansTable, RatesTable } from '../utils/interfaces';
@@ -9,6 +12,8 @@ import Middle from './layout/Middle';
 type LoadRatesProps = {
   loan: LoansTable;
 };
+
+const MySwal = withReactContent(Swal);
 
 export const LoanRates: React.FC<LoadRatesProps> = ({ loan }) => {
   const [paidRates, setPaidRates] = useState<RatesTable[]>();
@@ -31,11 +36,21 @@ export const LoanRates: React.FC<LoadRatesProps> = ({ loan }) => {
   }, [loan]);
 
   const handlePayment = (date: string): void => {
-    if (loan.id) {
-      addRate(loan.id, date).then(() => {
-        refreshRateData();
-      });
-    }
+    MySwal.fire({
+      title: 'Do you want to save the changes?',
+      showCancelButton: true,
+      confirmButtonText: 'Save',
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        if (loan.id) {
+          addRate(loan.id, date).then(() => {
+            refreshRateData();
+            Swal.fire('Saved!', '', 'success');
+          });
+        }
+      }
+    });
   };
 
   const refreshRateData = (): void => {
