@@ -20,3 +20,14 @@ export interface LoanValues {
 export interface LoansTable extends LoanValues {
   id?: number;
 }
+
+export interface RatesTable {
+  id?: number;
+  loanId: number;
+  rateDate: string;
+}
+
+export interface LoanRate {
+  date: string;
+  amount: number;
+}

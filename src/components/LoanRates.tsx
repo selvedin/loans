@@ -1,70 +1,89 @@
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 import { useCallback, useEffect, useState } from 'react';
-import { Badge, Button, Col, ListGroup, Row } from 'react-bootstrap';
+import { Button, Col, ListGroup, Row } from 'react-bootstrap';
+import { addRate, getRatesByLoan } from '../store/db';
 import { formatCurrency } from '../utils/helperFunctions';
-import { LoansTable } from '../utils/interfaces';
+import { LoanRate, LoansTable, RatesTable } from '../utils/interfaces';
 import Middle from './layout/Middle';
-
-interface LoanRate {
-  date: string;
-  amount: number;
-  handleClick: () => void;
-}
 
 type LoadRatesProps = {
   loan: LoansTable;
 };
 
 export const LoanRates: React.FC<LoadRatesProps> = ({ loan }) => {
+  const [paidRates, setPaidRates] = useState<RatesTable[]>();
   const [rates, setRates] = useState<LoanRate[]>([]);
 
   const calculateRates = useCallback(() => {
     const temp: LoanRate[] = [];
     let newDate = moment(loan.startDate);
+
     for (let i = 1; i <= loan.period; i++) {
+      const formatedDate = newDate.format('yyyy-MM-DD');
+
       temp.push({
-        date: newDate.format('yyyy-MM-DD'),
+        date: formatedDate,
         amount: loan.rate,
-        handleClick: () => alert(loan.title),
       });
       newDate.add(1, 'months');
     }
     setRates(temp);
   }, [loan]);
 
-  useEffect(() => {
-    calculateRates();
-  }, [calculateRates]);
-
-  const handlePayment = (date: string) => {
-    console.log('Rate paid for date: ', date, ' for laon: ', loan.id);
+  const handlePayment = (date: string): void => {
+    if (loan.id) {
+      addRate(loan.id, date).then(() => {
+        refreshRateData();
+      });
+    }
   };
+
+  const refreshRateData = (): void => {
+    if (loan.id)
+      getRatesByLoan(loan.id).then((result) => {
+        setPaidRates((old) => result);
+      });
+  };
+
+  useEffect(() => {
+    refreshRateData();
+    calculateRates();
+  }, []);
 
   return (
     <Middle align="start">
       <ListGroup>
-        {rates.map((rate, index) => (
-          <ListGroup.Item key={'rate' + index} className="border-bottom">
-            <Row>
-              <Col sm={2}>{index + 1}.</Col>
-              <Col sm={4}>
-                <strong>{rate.date}</strong>
-              </Col>
-              <Col sm={4}>
-                <small>[{formatCurrency(rate.amount)}]</small>
-              </Col>
-              <Col sm={2} className="text-end me-0">
-                <Button
-                  variant="success"
-                  className="btn-sm m-0"
-                  onClick={() => handlePayment(rate.date)}
-                >
-                  Pay
-                </Button>
-              </Col>
-            </Row>
-          </ListGroup.Item>
-        ))}
+        {rates.map((rate, index) => {
+          const isPaid = paidRates
+            ? paidRates?.some((r) => {
+                if (r.rateDate === rate.date) return true;
+                return false;
+              })
+            : false;
+          return (
+            <ListGroup.Item key={'rate' + index} className="border-bottom">
+              <Row>
+                <Col sm={2}>{index + 1}.</Col>
+                <Col sm={4}>
+                  <strong>{rate.date}</strong>
+                </Col>
+                <Col sm={4}>
+                  <small>[{formatCurrency(rate.amount)}]</small>
+                </Col>
+                <Col sm={2} className="text-end me-0">
+                  <Button
+                    variant={isPaid ? 'danger' : 'success'}
+                    className="btn-sm m-0"
+                    onClick={() => handlePayment(rate.date)}
+                    disabled={isPaid}
+                  >
+                    {isPaid ? 'Paid' : 'Pay'}
+                  </Button>
+                </Col>
+              </Row>
+            </ListGroup.Item>
+          );
+        })}
       </ListGroup>
     </Middle>
   );
