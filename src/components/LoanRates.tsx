@@ -69,6 +69,7 @@ export const LoanRates: React.FC<LoadRatesProps> = ({ loan }) => {
     <Middle align="start">
       <ListGroup>
         {rates.map((rate, index) => {
+          const d = moment(rate.date).format('DD');
           const isPaid = paidRates
             ? paidRates?.some((r) => {
                 if (r.rateDate === rate.date) return true;
@@ -76,7 +77,14 @@ export const LoanRates: React.FC<LoadRatesProps> = ({ loan }) => {
               })
             : false;
           return (
-            <ListGroup.Item key={'rate' + index} className="border-bottom">
+            <ListGroup.Item
+              key={'rate' + index}
+              className={
+                rate.date === moment().format('yyyy-MM-' + d)
+                  ? 'bg-warning border-bottom'
+                  : 'border-bottom'
+              }
+            >
               <Row>
                 <Col sm={2}>{index + 1}.</Col>
                 <Col sm={4}>
