@@ -1,13 +1,13 @@
-import React, { Dispatch, ReactElement, SetStateAction } from 'react';
-import Middle from './layout/Middle';
-import { Formik } from 'formik';
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
-import { ErrorMessage } from './common/ErrorMessage';
-import { LoanSchema } from '../utils/schemas';
-import { loanValues } from '../utils/initialValues';
-import { addLoan } from '../store/db';
-import { useNavigate } from 'react-router-dom';
+import React, { ReactElement } from "react";
+import Middle from "./layout/Middle";
+import { Formik } from "formik";
+import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
+import { ErrorMessage } from "./common/ErrorMessage";
+import { LoanSchema } from "../utils/schemas";
+import { loanValues } from "../utils/initialValues";
+import { addLoan } from "../store/db";
+import { useNavigate } from "react-router-dom";
 
 const LoanForm: React.FC = (): ReactElement => {
   const navigate = useNavigate();
@@ -17,10 +17,10 @@ const LoanForm: React.FC = (): ReactElement => {
         initialValues={loanValues}
         validationSchema={LoanSchema}
         onSubmit={(values, { setSubmitting, resetForm }) => {
-          addLoan(values).then((result) => {
+          addLoan(values).then(result => {
             resetForm();
             setSubmitting(false);
-            navigate('/loan/' + result);
+            navigate("/loan/" + result);
           });
         }}
       >
